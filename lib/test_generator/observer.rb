@@ -1,6 +1,6 @@
 module TestGenerator
   module Observer
-    DENYLIST = [:attributes, :serializable_hash, :inspect, :has_one_attached]
+    DENYLIST = [:attributes, :serializable_hash, :inspect, :has_one_attached, :version=]
 
     include TestGenerator::Reflector
     
