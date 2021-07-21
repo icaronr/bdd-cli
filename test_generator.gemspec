@@ -16,4 +16,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails', '>= 0'
   s.add_dependency 'shoulda-matchers', '~> 4.0'
   s.add_dependency 'factory_bot_rails'
+  s.executables = ['testgenerator']
 end
