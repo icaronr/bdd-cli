@@ -47,6 +47,8 @@ class UnitTestGenerator < Rails::Generators::NamedBase
       else # other test for other method
         executed_methods.push(class_and_method_name)
         executed_arguments[class_and_method_name.to_sym] = []
+        p line
+        p method_specs(line)
         @methods_specs << method_specs(line)
       end
     end
@@ -56,6 +58,8 @@ class UnitTestGenerator < Rails::Generators::NamedBase
 
     associations.each do |kind, names|
       @associations_specs << association_specs(kind, names)
+      p "Kind: #{kind}, Names: #{names}\n"
+      #template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{class_name.pluralize.downcase}.rb")
     end
     
     @associations_specs = @associations_specs.flatten.uniq.compact
@@ -69,7 +73,7 @@ class UnitTestGenerator < Rails::Generators::NamedBase
 
     @validations_specs = @validations_specs.flatten.uniq.compact
 
-    template "model_spec.rb", Rails.root.join("spec/models/#{class_name.downcase}_spec.rb")
-    template "factory_template.rb", Rails.root.join("spec/factories/#{class_name.pluralize.downcase}.rb")
+    template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{class_name.pluralize.downcase}.rb")
+    template "model_spec.rb", Rails.root.join("spec/models/BDD/#{class_name.downcase}_spec.rb")
   end
 end

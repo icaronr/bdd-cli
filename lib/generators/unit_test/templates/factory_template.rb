@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :<%= @klass.downcase %> do<% @factory_args.each do |arg| %>
+  factory :bdd_<%= @klass.downcase %>, class: <%= @klass %> do<% @factory_args.each do |arg| %>
     <%= arg %><% end %>
   end
 end

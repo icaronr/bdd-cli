@@ -5,7 +5,7 @@ module TestGenerator
       # get object attributes
       attrs = obj.instance_variable_get("@attributes").to_hash
       # Create temp model file
-      file_name = Rails.root.join("tmp/#{klass}.rb")
+      file_name = Rails.root.join("tmp/BDD_#{klass}.rb")
       # file_line = "{ \"klass\": \"#{klass}\", \"method\": \"#{method_name}\", \"args\": #{args.inspect}, \"attrs\": #{attrs.to_json}, \"response\": #{response.inspect.gsub('nil', 'null').to_json} }"
       file_line = "{ \"klass\": \"#{klass}\", \"method\": \"#{method_name}\", \"args\": #{args.inspect}, \"attrs\": #{attrs.to_json} }"
       file = File.new(file_name, 'a')

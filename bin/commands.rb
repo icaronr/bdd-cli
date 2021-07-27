@@ -5,7 +5,7 @@ module Behaviorism
         puts "All done!"
     end
     
-    def analyse
+    def run
         puts "Running cucumber..."
         begin
         system "bundle exec cucumber", exception: true

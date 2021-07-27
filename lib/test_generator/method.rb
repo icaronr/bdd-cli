@@ -18,7 +18,7 @@ module TestGenerator
 
       "describe '##{method_name}' do
     it 'should' do
-      #{klass.downcase} = create(:#{klass.downcase}, #{final_attrs})
+      #{klass.downcase} = create(:bdd_#{klass.downcase}, #{final_attrs})
       expect(#{klass.downcase}.#{method_name}(#{args.join(', ')})).to eq #{response}
     end
   end"
