@@ -12,7 +12,8 @@ class UnitTestGenerator < Rails::Generators::NamedBase
     @klass = class_name
 
     lines = read_temp_file(class_name)
-
+    # p lines
+    
     @methods_specs = []
     @validations_specs = []
     @associations_specs = []
@@ -23,15 +24,33 @@ class UnitTestGenerator < Rails::Generators::NamedBase
 
     denylist = ["updated_at", "created_at", "id"]
     # creating the default factory arguments
-    lines.first['attrs'].keys.each do |key|
-      unless denylist.include?(key)
-        if( /(.*)_id$/.match?(key)) # it is an association
-          @factory_args.push("#{key.gsub('_id','')}")
-        else
-          @factory_args.push("#{key} { \"#{lines.first['attrs'][key]}\" }")
+    
+    # lines.first['attrs'].keys.each do |key|
+    #   unless denylist.include?(key)
+    #     if( /(.*)_id$/.match?(key)) # it is an association
+    #       @factory_args.push("#{key.gsub('_id','')}")
+    #     else
+    #       @factory_args.push("#{key} { \"#{lines.first['attrs'][key]}\" }")
+    #     end
+    #   end
+    # end
+
+    lines.each do |line|
+      # p "CHAVE: #{line.keys}"
+      # p "VALOR: #{line.values}"
+      
+      line.values.first['attrs'].each do |key, value|
+        unless denylist.include?(key)
+          if(/(.*)_id$/.match(key))
+            @factory_args.push("#{key.gsub('_id','')}")
+          else
+            @factory_args.push("#{key} { \"#{value}\" }")
+          end
         end
       end
     end
+
+    p @factory_args
 
     # Generate methods specs
     lines.each do |line|
@@ -48,8 +67,8 @@ class UnitTestGenerator < Rails::Generators::NamedBase
         executed_methods.push(class_and_method_name)
         executed_arguments[class_and_method_name.to_sym] = []
         p line
-        p method_specs(line)
-        @methods_specs << method_specs(line)
+        #p method_specs(line)
+        #@methods_specs << method_specs(line)
       end
     end
 
