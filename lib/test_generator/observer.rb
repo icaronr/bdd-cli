@@ -27,6 +27,7 @@ module TestGenerator
             define_method(method_name) do |*args, &block|
               # reflect(klass, method_name, args, self)
               #puts "define_method: #{method_name}"
+              #puts "define_method: #{method_name}"
               log(klass, method_name, args, self)
               # puts "log: #{log(klass, method_name, args, self)}"
               # file_content << log(klass, method_name, args, self)

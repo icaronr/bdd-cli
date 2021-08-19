@@ -11,8 +11,8 @@ module TestGenerator
       file_line = { 
         # "klass": "#{klass}",
         # "method": "#{method_name}",
-        "args": args,
-        "attrs": attrs
+        "args": args.to_json,
+        "attrs": attrs.to_json
         # "response": "#{response.inspect.gsub('nil', 'null').to_json}"
       }
       Rails.cache.write("#{klass}##{method_name}",file_line)

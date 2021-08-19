@@ -18,6 +18,8 @@ class UnitTestGenerator < Rails::Generators::NamedBase
     @validations_specs = []
     @associations_specs = []
     @factory_args = []
+    @related_models = []
+    executed_factory_args = []
 
     executed_methods = [] # array to store the executed methods to avoid duplicity
     executed_arguments = {} # hash to store the executed arguments to avoid duplicity
@@ -35,17 +37,23 @@ class UnitTestGenerator < Rails::Generators::NamedBase
     #   end
     # end
 
+    
+    classes = [Array, TrueClass, FalseClass, Integer, Float, Hash]
+    req_attr = required_attr(@klass)
     lines.each do |line|
       # p "CHAVE: #{line.keys}"
       # p "VALOR: #{line.values}"
-      
-      line.values.first['attrs'].each do |key, value|
-        unless denylist.include?(key)
+      attrs = JSON.parse(line.values.first['attrs'])
+      attrs.each do |key, value|
+        unless denylist.include?(key) or executed_factory_args.include?(key) or (req_attr.include?(key.to_sym) && value == nil)
           if(/(.*)_id$/.match(key))
-            @factory_args.push("#{key.gsub('_id','')}")
+            # @factory_args.push("#{key.gsub('_id','')}")
+            @related_models.push("#{key.gsub('_id','')}")
           else
-            @factory_args.push("#{key} { \"#{value}\" }")
+            val = classes.include?(value.class) ? value : "'#{value}'"
+            @factory_args.push("#{key} { #{val} }")
           end
+          executed_factory_args.push(key)
         end
       end
     end
@@ -91,7 +99,6 @@ class UnitTestGenerator < Rails::Generators::NamedBase
     end
 
     @validations_specs = @validations_specs.flatten.uniq.compact
-
     template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{class_name.pluralize.downcase}.rb")
     template "model_spec.rb", Rails.root.join("spec/models/BDD/#{class_name.downcase}_spec.rb")
   end

@@ -19,21 +19,29 @@ if ARGV.include? '--help' or ARGV.length < 1 then
     return
 end
 
-def parse_commands command
+def parse_commands command, args
     case command
     when "run"
-        run
+        if args.size > 0 then
+            run args
+        else
+            run
+        end
     when "clean"
-        clean
+        if args.size > 0 then
+            clean args
+        else
+            clean
+        end
     when "generate"
         generate
     when "install"
-    install
+        install
     end
 end
 
-ARGV.each do |command|
-    parse_commands command
-end
+command, *args = ARGV
+parse_commands command, args
+
 
 

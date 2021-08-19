@@ -16,5 +16,13 @@ module TestGenerator
         attrs.map {|a| "it { should validate_presence_of(:#{a[:attr]}) }" }
       end
     end
+
+    def required_attr(klass_name)
+      byebug
+      eval(klass_name)
+        .validators                                        
+        .grep(ActiveRecord::Validations::PresenceValidator)
+        .flat_map(&:attributes)
+    end
   end
 end
