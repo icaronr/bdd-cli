@@ -1,10 +1,12 @@
 FactoryBot.define do
   factory :bdd_<%= @klass.downcase %>, class: <%= @klass %> do<% @factory_args.each do |arg| %>
     <%= arg %><% end %>
-  end
-  <% if @related_models.size > 0 %>
-      <% @related_models.each do |model_name| %>
-        <%= model_name %> { build(:bdd_<%= model_name %>) }
+    <% if @related_models.size > 0 %>
+    <% @related_models.each do |elem| %>
+      trait :with_<%= elem[:association]%> do
+        association :<%= elem[:association] %>, factory: :bdd_<%= elem[:model].to_s.downcase %>
+      end
       <% end %>
-  <% end %>
+    <% end %>
+  end
 end

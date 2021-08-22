@@ -1,11 +1,14 @@
 module TestGenerator
   module Method
     include TestGenerator::Utils
+    include TestGenerator::Reflector
+    require 'factory_bot_rails'
 
     def method_specs(line)
       denylist = ["updated_at", "created_at", "id"]
-      klass, method_name, args, attrs, response = destruct(line)
-
+      klass, method_name, args, attrs = destruct(line)
+      obj = FactoryBot.create(klass.name.tableize.singularize.to_sym)
+      response = reflect(klass, method_name, args, obj)
       attrs_string = "{ "
       attrs.keys.each do |key|
         unless denylist.include?(key)
@@ -18,8 +21,8 @@ module TestGenerator
 
       "describe '##{method_name}' do
     it 'should' do
-      #{klass.downcase} = create(:bdd_#{klass.downcase}, #{final_attrs})
-      expect(#{klass.downcase}.#{method_name}(#{args.join(', ')})).to eq #{response}
+      #{klass.name.downcase} = create(:bdd_#{klass.name.downcase})
+      expect(#{klass.name.downcase}.#{method_name}(#{args.join(', ')})).to eq #{response}
     end
   end"
     end

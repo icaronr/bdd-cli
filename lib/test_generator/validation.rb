@@ -18,7 +18,6 @@ module TestGenerator
     end
 
     def required_attr(klass_name)
-      byebug
       eval(klass_name)
         .validators                                        
         .grep(ActiveRecord::Validations::PresenceValidator)

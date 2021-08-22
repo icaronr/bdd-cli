@@ -15,6 +15,7 @@ module TestGenerator
         "attrs": attrs.to_json
         # "response": "#{response.inspect.gsub('nil', 'null').to_json}"
       }
+      
       Rails.cache.write("#{klass}##{method_name}",file_line)
       # file_content << file_line
       # # file_line = "{ \"klass\": \"#{klass}\", \"method\": \"#{method_name}\", \"args\": #{args.inspect}, \"attrs\": #{attrs.to_json}, \"response\": #{response.inspect.gsub('nil', 'null').to_json} }"

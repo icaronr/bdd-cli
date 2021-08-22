@@ -1,11 +1,11 @@
-require 'test_generator'
-Rails.application.eager_load!
-ApplicationRecord.descendants.each do |model|
-  model.send(:include, TestGenerator::Observer)
-  model.observe
-end
-=begin
-config.after_initialize do
+# require 'test_generator'
+# Rails.application.eager_load!
+# ApplicationRecord.descendants.each do |model|
+#   model.send(:include, TestGenerator::Observer)
+#   model.observe
+# end
+
+Rails.application.config.after_initialize do
   p ENV['TESTGENERATOR']
   if ENV['TESTGENERATOR'] then
     require 'test_generator'
@@ -24,4 +24,3 @@ config.after_initialize do
     puts "If you want to generate logs for future analysis, run: testgenerator run"
   end
 end
-=end

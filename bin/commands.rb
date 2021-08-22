@@ -1,7 +1,10 @@
 module Behaviorism
     def install
         puts "Installing dependencies..."
+        system "rm config/initializers/bdd_logger.rb"
+        system "rm features/support/bdd_env.rb"
         puts "Generating initializer..."
+        system "bundle exec rails g config_behaviorism init"
         puts "All done!"
     end
     
@@ -10,7 +13,7 @@ module Behaviorism
         puts "Running cucumber..."
         if type == "-p" then
             if paths.size > 0 then
-                p paths
+                paths = paths.join(" ")
                 begin
                 system "TESTGENERATOR=true bundle exec cucumber #{paths} --verbose", exception: true
                 rescue StandardError => err

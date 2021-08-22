@@ -24,7 +24,7 @@ class UnitTestGenerator < Rails::Generators::NamedBase
     executed_methods = [] # array to store the executed methods to avoid duplicity
     executed_arguments = {} # hash to store the executed arguments to avoid duplicity
 
-    denylist = ["updated_at", "created_at", "id"]
+    @denylist = ["updated_at", "created_at", "id"]
     # creating the default factory arguments
     
     # lines.first['attrs'].keys.each do |key|
@@ -45,10 +45,13 @@ class UnitTestGenerator < Rails::Generators::NamedBase
       # p "VALOR: #{line.values}"
       attrs = JSON.parse(line.values.first['attrs'])
       attrs.each do |key, value|
-        unless denylist.include?(key) or executed_factory_args.include?(key) or (req_attr.include?(key.to_sym) && value == nil)
+        unless @denylist.include?(key) or executed_factory_args.include?(key) or (req_attr.include?(key.to_sym) && value == nil)
           if(/(.*)_id$/.match(key))
+            klass = eval(@klass)
             # @factory_args.push("#{key.gsub('_id','')}")
-            @related_models.push("#{key.gsub('_id','')}")
+            association_name = "#{key.gsub('_id','')}"
+            association_class = klass.reflect_on_all_associations(:belongs_to).map{|rel| rel.options[:class_name] if rel.name == association_name.to_sym }.compact.first
+            @related_models.push({:model => association_class, :association => association_name })
           else
             val = classes.include?(value.class) ? value : "'#{value}'"
             @factory_args.push("#{key} { #{val} }")
@@ -57,12 +60,18 @@ class UnitTestGenerator < Rails::Generators::NamedBase
         end
       end
     end
+    generate_factory(@klass)
 
-    p @factory_args
 
     # Generate methods specs
     lines.each do |line|
-      klass, method_name, args, attrs, response = destruct(line)
+      # method_name, args, attrs, response = destruct(line)
+      klass = eval(@klass)
+      method_name = line.keys.first
+      args, attrs = line.values.first.values_at('args', 'attrs')
+      args = JSON.parse(args)
+      attrs = JSON.parse(attrs)
+      line_args = {'klass' => klass, 'method' => method_name, 'args' => args, 'attrs' => attrs }
       class_and_method_name = "#{klass}::#{method_name}"
       if executed_methods.include?(class_and_method_name)
         if executed_arguments[class_and_method_name.to_sym].include?(args)
@@ -76,7 +85,7 @@ class UnitTestGenerator < Rails::Generators::NamedBase
         executed_arguments[class_and_method_name.to_sym] = []
         p line
         #p method_specs(line)
-        #@methods_specs << method_specs(line)
+        @methods_specs << method_specs(line_args)
       end
     end
 
@@ -101,5 +110,45 @@ class UnitTestGenerator < Rails::Generators::NamedBase
     @validations_specs = @validations_specs.flatten.uniq.compact
     template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{class_name.pluralize.downcase}.rb")
     template "model_spec.rb", Rails.root.join("spec/models/BDD/#{class_name.downcase}_spec.rb")
+  end
+  
+  private
+  
+  def generate_factory(model_name)
+    lines = read_temp_file(model_name)
+    related_models = []
+    factory_args = []
+    executed_factory_args = []
+    classes = [Array, TrueClass, FalseClass, Integer, Float, Hash]
+    req_attr = required_attr(model_name)
+    lines.each do |line|
+      # p "CHAVE: #{line.keys}"
+      # p "VALOR: #{line.values}"
+      attrs = JSON.parse(line.values.first['attrs'])
+      attrs.each do |key, value|
+        unless @denylist.include?(key) or executed_factory_args.include?(key) or (req_attr.include?(key.to_sym) && value == nil)
+          if(/(.*)_id$/.match(key))
+            klass = eval(model_name)
+            # @factory_args.push("#{key.gsub('_id','')}")
+            association_name = "#{key.gsub('_id','')}"
+            association_class = klass.reflect_on_all_associations(:belongs_to).map{|rel| rel.options[:class_name] if rel.name == association_name.to_sym }.compact.first
+            related_models.push({:model => association_class, :association => association_name })
+          else
+            val = classes.include?(value.class) ? value : "'#{value}'"
+            factory_args.push("#{key} { #{val} }")
+          end
+          executed_factory_args.push(key)
+        end
+      end
+    end
+    #template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{class_name.pluralize.downcase}.rb")
+    related_models.each do |mod| #related_model: {model, association}
+      # Vê se essa factory já existe (factory.rb)
+      # Vê se essa factory já existe no nosso array
+      # Se não existir, cria
+      generate_factory(mod.model)
+      # Se existir, bate palma
+    end
+    
   end
 end
