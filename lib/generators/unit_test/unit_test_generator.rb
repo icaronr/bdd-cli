@@ -141,13 +141,19 @@ class UnitTestGenerator < Rails::Generators::NamedBase
         end
       end
     end
-    #template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{class_name.pluralize.downcase}.rb")
+    template "factory_template.rb", Rails.root.join("spec/factories/BDD/#{model_name.pluralize.downcase}.rb"), {}
+    byebug
     related_models.each do |mod| #related_model: {model, association}
-      # Vê se essa factory já existe (factory.rb)
-      # Vê se essa factory já existe no nosso array
-      # Se não existir, cria
-      generate_factory(mod.model)
-      # Se existir, bate palma
+      if(mod[:model]) then
+        file_name = mod[:model].pluralize.downcase
+        # Vê se essa factory já existe (factory.rb)
+        if !File.exist?("spec/factories/BDD/#{file_name}.rb") then
+          byebug
+          # Se não existir, cria
+          generate_factory(mod[:model])
+        end
+        # Se existir, bate palma
+      end
     end
     
   end
