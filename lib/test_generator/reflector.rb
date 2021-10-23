@@ -16,23 +16,19 @@ module TestGenerator
 
       if klass.exists? id: attrs['id']
         obj = klass.find(attrs['id'])
-
         response = if args.any?
           begin
           obj.method(method_name).super_method.call(*args)
           rescue
-            p "Quebrou 1"
+            return nil
           end
         else
           begin
             obj.method(method_name).super_method.call
           rescue 
-            p "Quebrou 2"
-            # p method_name
+            return nil
           end
         end
-
-        log(klass, method_name, args, attrs, response)
       end
     end
   end
