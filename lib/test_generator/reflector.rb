@@ -20,12 +20,14 @@ module TestGenerator
           begin
           obj.method(method_name).super_method.call(*args)
           rescue
+            p "cacetada 1"
             return nil
           end
         else
           begin
             obj.method(method_name).super_method.call
           rescue 
+            "cacetada 2"
             return nil
           end
         end

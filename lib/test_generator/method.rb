@@ -2,11 +2,13 @@ module TestGenerator
   module Method
     include TestGenerator::Utils
     include TestGenerator::Reflector
+    # p "import factories"
     require 'factory_bot_rails'
 
     def method_specs(line)
       denylist = ["updated_at", "created_at", "id"]
       klass, method_name, args, attrs = destruct(line)
+      p "Gerando factories"
       obj = FactoryBot.create(klass.name.tableize.singularize.to_sym)
       response = reflect(klass, method_name, args, obj)
       attrs_string = "{ "

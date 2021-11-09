@@ -46,7 +46,10 @@ module Behaviorism
     def generate args
         generator, model_name = args
         puts "Checking command..."
-        system "bundle exec rails g unit_test #{model_name}"
+        p "Generator: "
+        p generator
+        p model_name
+        #system "bundle exec rails g #{generator} #{model_name}"
         puts "All done!"
     end
 end

@@ -9,6 +9,7 @@ class UnitTestGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
   def create_unit_test
+    p "begin create test"
     @klass = class_name
 
     lines = read_temp_file(class_name)

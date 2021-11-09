@@ -6,7 +6,7 @@ puts "Número de argumentos: #{ARGV.length}"
 
 if ARGV.include? '--help' or ARGV.length < 1 then
     # puts "\e[H\e[2J" #clears the terminal
-    puts "Welcome to TestGenerator!"
+    puts "Welcome to BDD-CLI!"
     puts "You can use the following commands:"
     puts
     puts "#{"run".ljust(20)} Run cucumber and generate the logfiles."
@@ -15,7 +15,7 @@ if ARGV.include? '--help' or ARGV.length < 1 then
     puts "#{"install".ljust(20)} Install the dependencies needed."
     puts
     puts
-    puts "Thank you for using TestGenerator!"
+    puts "Thank you for using BDD-CLI!"
     return
 end
 
@@ -34,7 +34,11 @@ def parse_commands command, args
             clean
         end
     when "generate"
-        generate
+        if args.size > 0 then
+            generate args
+        else
+            generate
+        end
     when "install"
         install
     end
